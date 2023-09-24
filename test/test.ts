@@ -45,4 +45,22 @@ describe("getRows", () => {
     add(graph, "a", "c");
     assert.deepStrictEqual(getRows(graph), ["a", "b", "c", "d"]);
   });
+  test("circular 1", () => {
+    const graph = newGraph();
+    add(graph, "a", "a");
+    assert.throws(() => getRows(graph));
+  });
+  test("circular 2", () => {
+    const graph = newGraph();
+    add(graph, "a", "b");
+    add(graph, "b", "a");
+    assert.throws(() => getRows(graph));
+  });
+  test("circular 3", () => {
+    const graph = newGraph();
+    add(graph, "a", "b");
+    add(graph, "b", "c");
+    add(graph, "c", "a");
+    assert.throws(() => getRows(graph));
+  });
 });
