@@ -118,3 +118,44 @@ export const getCols = (graph: Graph): string[][] => {
   cols.reverse();
   return cols;
 };
+
+export function* getLines(
+  graph: Graph,
+  rows: string[],
+  cols: string[][]
+): Generator<string> {
+  const rowContext = Array.from({ length: cols.length }).map(
+    () => new Set<string>()
+  );
+  for (const row of rows) {
+    let line = "";
+    let hit = false;
+    for (let i = 0; i < cols.length; i++) {
+      if (rowContext[i].has(row)) {
+        rowContext[i].delete(row);
+        if (rowContext[i].size === 0) {
+          line += hit ? "┴" : "└";
+        } else {
+          line += "├";
+        }
+        hit = true;
+      } else {
+        if (cols[i].includes(row)) {
+          line += "◊";
+          hit = false;
+          for (const toBeFound of graph.map.get(row) ?? []) {
+            rowContext[i].add(toBeFound);
+          }
+        } else {
+          if (rowContext[i].size > 0) {
+            line += "│";
+          } else {
+            line += hit ? "─" : " ";
+          }
+        }
+      }
+    }
+    line += " " + row;
+    yield line;
+  }
+}

@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import { describe, test } from "node:test";
 import { newGraph, add, getRows } from "../dist";
-import { getCols } from "../src";
+import { getCols, getLines } from "../src";
 
 test("add", () => {
   const graph = newGraph();
@@ -136,5 +136,37 @@ describe("getCols", () => {
     add(graph, "b", "c");
     add(graph, "c", "a");
     assert.doesNotThrow(() => getCols(graph));
+  });
+});
+
+describe("getLines", () => {
+  test("empty", () => {
+    const graph = newGraph();
+    const rows = getRows(graph);
+    const cols = getCols(graph);
+    assert.deepStrictEqual([...getLines(graph, rows, cols)], []);
+  });
+  test("complex (preview)", () => {
+    const graph = newGraph();
+    add(graph, "a", "b");
+    add(graph, "b", "d");
+    add(graph, "b", "c");
+    add(graph, "b", "h");
+    add(graph, "c", "d");
+    add(graph, "d", "e");
+    add(graph, "f", "g");
+    add(graph, "g", "h");
+    add(graph, "h", "e");
+    add(graph, "h", "i");
+    add(graph, "i", "j");
+    add(graph, "j", "e");
+    add(graph, "k", "g");
+    add(graph, "k", "i");
+    add(graph, "k", "h");
+    const rows = getRows(graph);
+    const cols = getCols(graph);
+    for (const line of getLines(graph, rows, cols)) {
+      console.log(line);
+    }
   });
 });
