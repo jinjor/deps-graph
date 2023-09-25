@@ -42,7 +42,7 @@ export const add = (graph: Graph, from: string, to: string): boolean => {
 };
 
 export const getRows = (graph: Graph): string[] => {
-  const row: string[] = [];
+  const rows: string[] = [];
   const map = cloneMap(graph.map);
   const inverseMap = cloneMap(graph.inverseMap);
 
@@ -50,7 +50,7 @@ export const getRows = (graph: Graph): string[] => {
     return [...map.keys()].find((key) => !inverseMap.has(key));
   };
   const collect = (node: string) => {
-    row.push(node);
+    rows.push(node);
     const nextNodes = map.get(node);
     if (!nextNodes) {
       return;
@@ -75,5 +75,46 @@ export const getRows = (graph: Graph): string[] => {
   if (map.size > 0 || inverseMap.size > 0) {
     throw new Error("Circular dependency detected");
   }
-  return row;
+  return rows;
+};
+
+export const getCols = (graph: Graph): string[][] => {
+  const cols: string[][] = [];
+  const { map } = graph;
+  const inverseMap = cloneMap(graph.inverseMap);
+  const visited = new Set<string>();
+
+  const collect = (node: string, index = 0, prev?: string) => {
+    if (visited.has(node)) {
+      return;
+    }
+    const existing = cols[index];
+    if (existing) {
+      if (prev && existing.some((item) => map.get(item)?.includes(prev))) {
+        cols.splice(index, 0, [node]);
+      } else {
+        existing.push(node);
+      }
+    } else {
+      cols.push([node]);
+    }
+    visited.add(node);
+
+    const nextNodes = inverseMap.get(node);
+    if (!nextNodes) {
+      return;
+    }
+    nextNodes.reverse();
+    for (const nextNode of nextNodes) {
+      collect(nextNode, index + 1, node);
+    }
+  };
+
+  const firstNodes = [...inverseMap.keys()].filter((key) => !map.has(key));
+  firstNodes.reverse();
+  for (const node of firstNodes) {
+    collect(node);
+  }
+  cols.reverse();
+  return cols;
 };
