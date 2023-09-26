@@ -41,7 +41,7 @@ export const add = (graph: Graph, from: string, to: string): boolean => {
   return true;
 };
 
-export const from = (graph: Graph, from: string): Graph => {
+export const from = (graph: Graph, ...from: string[]): Graph => {
   const newGraph = create();
   const collect = (node: string) => {
     const nextNodes = graph.map.get(node);
@@ -56,11 +56,11 @@ export const from = (graph: Graph, from: string): Graph => {
       collect(nextNode);
     }
   };
-  collect(from);
+  from.forEach(collect);
   return newGraph;
 };
 
-export const to = (graph: Graph, to: string): Graph => {
+export const to = (graph: Graph, ...to: string[]): Graph => {
   const newGraph = create();
   const collect = (node: string) => {
     const prevNodes = graph.inverseMap.get(node);
@@ -75,7 +75,7 @@ export const to = (graph: Graph, to: string): Graph => {
       collect(prevNode);
     }
   };
-  collect(to);
+  to.forEach(collect);
   return newGraph;
 };
 

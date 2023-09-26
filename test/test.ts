@@ -46,6 +46,30 @@ describe("from", () => {
     assert.strictEqual(add(newGraph, "b", "c"), false);
     assert.strictEqual(add(newGraph, "a", "b"), true);
   });
+  test("multi inputs", () => {
+    const graph = create();
+    add(graph, "a", "c");
+    add(graph, "b", "c");
+    const newGraph = from(graph, "b");
+    assert.strictEqual(add(newGraph, "a", "c"), true);
+    assert.strictEqual(add(newGraph, "b", "c"), false);
+  });
+  test("multi inputs, from both", () => {
+    const graph = create();
+    add(graph, "a", "c");
+    add(graph, "b", "c");
+    const newGraph = from(graph, "a", "b");
+    assert.strictEqual(add(newGraph, "a", "c"), false);
+    assert.strictEqual(add(newGraph, "b", "c"), false);
+  });
+  test("multi outputs", () => {
+    const graph = create();
+    add(graph, "a", "b");
+    add(graph, "a", "c");
+    const newGraph = from(graph, "a");
+    assert.strictEqual(add(newGraph, "a", "b"), false);
+    assert.strictEqual(add(newGraph, "a", "c"), false);
+  });
 });
 
 describe("to", () => {
@@ -82,6 +106,30 @@ describe("to", () => {
     const newGraph = to(graph, "c");
     assert.strictEqual(add(newGraph, "b", "c"), false);
     assert.strictEqual(add(newGraph, "a", "b"), false);
+  });
+  test("multi inputs", () => {
+    const graph = create();
+    add(graph, "a", "c");
+    add(graph, "b", "c");
+    const newGraph = to(graph, "c");
+    assert.strictEqual(add(newGraph, "a", "c"), false);
+    assert.strictEqual(add(newGraph, "b", "c"), false);
+  });
+  test("multi outputs", () => {
+    const graph = create();
+    add(graph, "a", "b");
+    add(graph, "a", "c");
+    const newGraph = to(graph, "b");
+    assert.strictEqual(add(newGraph, "a", "b"), false);
+    assert.strictEqual(add(newGraph, "a", "c"), true);
+  });
+  test("multi outputs, to both", () => {
+    const graph = create();
+    add(graph, "a", "b");
+    add(graph, "a", "c");
+    const newGraph = to(graph, "b", "c");
+    assert.strictEqual(add(newGraph, "a", "b"), false);
+    assert.strictEqual(add(newGraph, "a", "c"), false);
   });
 });
 
