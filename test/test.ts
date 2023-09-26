@@ -267,6 +267,7 @@ describe("getLines", () => {
     const graph = new Graph();
     assert.deepStrictEqual([...graph.getLines()], []);
   });
+
   test("complex (preview)", () => {
     const graph = new Graph();
     graph.add("a", "b");
@@ -287,5 +288,14 @@ describe("getLines", () => {
     for (const line of graph.getLines()) {
       console.log(line);
     }
+    console.log();
+    for (const line of graph.from("c", "g").getLines()) {
+      console.log(line);
+    }
+    console.log();
+    for (const line of graph.to("d", "h").getLines()) {
+      console.log(line);
+    }
+    console.log();
   });
 });
