@@ -22,7 +22,7 @@ const cloneMap = (map: DepsMap): DepsMap => {
   return newMap;
 };
 
-export const newGraph = (): Graph => {
+export const create = (): Graph => {
   return {
     map: new Map<string, string[]>(),
     inverseMap: new Map<string, string[]>(),
@@ -39,6 +39,44 @@ export const add = (graph: Graph, from: string, to: string): boolean => {
   appendToMap(graph.inverseMap, to, from);
   graph.relations.add(relation);
   return true;
+};
+
+export const from = (graph: Graph, from: string): Graph => {
+  const newGraph = create();
+  const collect = (node: string) => {
+    const nextNodes = graph.map.get(node);
+    if (!nextNodes) {
+      return;
+    }
+    for (const nextNode of nextNodes) {
+      const added = add(newGraph, node, nextNode);
+      if (!added) {
+        continue;
+      }
+      collect(nextNode);
+    }
+  };
+  collect(from);
+  return newGraph;
+};
+
+export const to = (graph: Graph, to: string): Graph => {
+  const newGraph = create();
+  const collect = (node: string) => {
+    const prevNodes = graph.inverseMap.get(node);
+    if (!prevNodes) {
+      return;
+    }
+    for (const prevNode of prevNodes) {
+      const added = add(newGraph, prevNode, node);
+      if (!added) {
+        continue;
+      }
+      collect(prevNode);
+    }
+  };
+  collect(to);
+  return newGraph;
 };
 
 export const getRows = (graph: Graph): string[] => {
