@@ -67,6 +67,25 @@ export class Graph {
     to.forEach(collect);
     return newGraph;
   }
+  isReachable(from: string, to: string, visited = new Set<string>()): boolean {
+    if (visited.has(from)) {
+      return false;
+    }
+    visited.add(from);
+    const nextNodes = this.map.get(from);
+    if (!nextNodes) {
+      return false;
+    }
+    for (const nextNode of nextNodes) {
+      if (nextNode === to) {
+        return true;
+      }
+      if (this.isReachable(nextNode, to, visited)) {
+        return true;
+      }
+    }
+    return false;
+  }
   getRows(): string[] {
     const rows: string[] = [];
     const map = cloneMap(this.map);

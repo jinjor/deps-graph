@@ -10,6 +10,35 @@ describe("add", () => {
   });
 });
 
+describe("isReachable", () => {
+  test("empty", () => {
+    const graph = new Graph();
+    assert.strictEqual(graph.isReachable("a", "a"), false);
+    assert.strictEqual(graph.isReachable("a", "b"), false);
+  });
+  test("two", () => {
+    const graph = new Graph();
+    graph.add("a", "b");
+    assert.strictEqual(graph.isReachable("a", "a"), false);
+    assert.strictEqual(graph.isReachable("a", "b"), true);
+    assert.strictEqual(graph.isReachable("b", "a"), false);
+  });
+  test("three", () => {
+    const graph = new Graph();
+    graph.add("a", "b");
+    graph.add("b", "c");
+    assert.strictEqual(graph.isReachable("a", "a"), false);
+    assert.strictEqual(graph.isReachable("a", "b"), true);
+    assert.strictEqual(graph.isReachable("a", "c"), true);
+    assert.strictEqual(graph.isReachable("b", "a"), false);
+    assert.strictEqual(graph.isReachable("b", "b"), false);
+    assert.strictEqual(graph.isReachable("b", "c"), true);
+    assert.strictEqual(graph.isReachable("c", "a"), false);
+    assert.strictEqual(graph.isReachable("c", "b"), false);
+    assert.strictEqual(graph.isReachable("c", "c"), false);
+  });
+});
+
 describe("from", () => {
   test("1/2", () => {
     const graph = new Graph();
