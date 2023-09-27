@@ -134,7 +134,11 @@ export class Graph {
       }
       const existing = cols[index];
       if (existing) {
-        if (prev && existing.some((item) => this.has(item, prev))) {
+        if (
+          prev &&
+          (existing.some((item) => this.has(item, prev)) ||
+            existing.some((item) => this.isReachable(item, prev)))
+        ) {
           cols.splice(index, 0, [node]);
         } else {
           existing.push(node);

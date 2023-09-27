@@ -271,6 +271,22 @@ describe("getCols", () => {
       ["d"],
     ]);
   });
+  test("hexagon 2", () => {
+    const graph = new Graph();
+    graph.add("a", "b");
+    graph.add("b", "c");
+    graph.add("c", "d");
+    graph.add("d", "e");
+    graph.add("a", "f");
+    graph.add("f", "e");
+    assert.deepStrictEqual(graph.getCols(), [
+      ["a"],
+      ["b"],
+      ["f", "c"],
+      ["d"],
+      ["e"],
+    ]);
+  });
   test("circular 1", () => {
     const graph = new Graph();
     graph.add("a", "a");
