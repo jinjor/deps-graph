@@ -34,9 +34,6 @@
     "README.md",
     "LICENSE"
   ],
-  "bin": {
-    "deps-graph": "./dist/cli.js"
-  },
   "exports": {
     ".": {
       "require": "./dist/index.js",
