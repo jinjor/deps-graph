@@ -1,6 +1,7 @@
 {
   "name": "deps-graph",
   "version": "1.0.0",
+  "types": "dist/index.d.ts",
   "description": "",
   "scripts": {
     "build": "tsup",
