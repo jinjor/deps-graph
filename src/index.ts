@@ -19,11 +19,14 @@ export class Graph {
   private map: DepsMap = new Map();
   private inverseMap: DepsMap = new Map();
   private relations: Set<string> = new Set();
-  has(from: string, to: string): boolean {
+  hasRelation(from: string, to: string): boolean {
     return this.relations.has(`${from} ${to}`);
   }
+  hasNode(node: string): boolean {
+    return this.map.has(node) || this.inverseMap.has(node);
+  }
   add(from: string, to: string): boolean {
-    if (this.has(from, to)) {
+    if (this.hasRelation(from, to)) {
       return false;
     }
     appendToMap(this.map, from, to);
@@ -136,7 +139,7 @@ export class Graph {
       if (existing) {
         if (
           prev &&
-          (existing.some((item) => this.has(item, prev)) ||
+          (existing.some((item) => this.hasRelation(item, prev)) ||
             existing.some((item) => this.isReachable(item, prev)))
         ) {
           cols.splice(index, 0, [node]);

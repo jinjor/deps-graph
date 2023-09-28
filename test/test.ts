@@ -44,59 +44,59 @@ describe("from", () => {
     const graph = new Graph();
     graph.add("a", "b");
     const newGraph = graph.from("a");
-    assert.strictEqual(newGraph.has("a", "b"), true);
+    assert.strictEqual(newGraph.hasRelation("a", "b"), true);
   });
   test("2/2", () => {
     const graph = new Graph();
     graph.add("a", "b");
     const newGraph = graph.from("b");
-    assert.strictEqual(newGraph.has("a", "b"), false);
+    assert.strictEqual(newGraph.hasRelation("a", "b"), false);
   });
   test("?/2", () => {
     const graph = new Graph();
     graph.add("a", "b");
     const newGraph = graph.from("c");
-    assert.strictEqual(newGraph.has("a", "b"), false);
+    assert.strictEqual(newGraph.hasRelation("a", "b"), false);
   });
   test("1/3", () => {
     const graph = new Graph();
     graph.add("a", "b");
     graph.add("b", "c");
     const newGraph = graph.from("a");
-    assert.strictEqual(newGraph.has("b", "c"), true);
-    assert.strictEqual(newGraph.has("a", "b"), true);
+    assert.strictEqual(newGraph.hasRelation("b", "c"), true);
+    assert.strictEqual(newGraph.hasRelation("a", "b"), true);
   });
   test("2/3", () => {
     const graph = new Graph();
     graph.add("a", "b");
     graph.add("b", "c");
     const newGraph = graph.from("b");
-    assert.strictEqual(newGraph.has("b", "c"), true);
-    assert.strictEqual(newGraph.has("a", "b"), false);
+    assert.strictEqual(newGraph.hasRelation("b", "c"), true);
+    assert.strictEqual(newGraph.hasRelation("a", "b"), false);
   });
   test("multi inputs", () => {
     const graph = new Graph();
     graph.add("a", "c");
     graph.add("b", "c");
     const newGraph = graph.from("b");
-    assert.strictEqual(newGraph.has("a", "c"), false);
-    assert.strictEqual(newGraph.has("b", "c"), true);
+    assert.strictEqual(newGraph.hasRelation("a", "c"), false);
+    assert.strictEqual(newGraph.hasRelation("b", "c"), true);
   });
   test("multi inputs, from both", () => {
     const graph = new Graph();
     graph.add("a", "c");
     graph.add("b", "c");
     const newGraph = graph.from("a", "b");
-    assert.strictEqual(newGraph.has("a", "c"), true);
-    assert.strictEqual(newGraph.has("b", "c"), true);
+    assert.strictEqual(newGraph.hasRelation("a", "c"), true);
+    assert.strictEqual(newGraph.hasRelation("b", "c"), true);
   });
   test("multi outputs", () => {
     const graph = new Graph();
     graph.add("a", "b");
     graph.add("a", "c");
     const newGraph = graph.from("a");
-    assert.strictEqual(newGraph.has("a", "b"), true);
-    assert.strictEqual(newGraph.has("a", "c"), true);
+    assert.strictEqual(newGraph.hasRelation("a", "b"), true);
+    assert.strictEqual(newGraph.hasRelation("a", "c"), true);
   });
 });
 
@@ -105,59 +105,59 @@ describe("to", () => {
     const graph = new Graph();
     graph.add("a", "b");
     const newGraph = graph.to("a");
-    assert.strictEqual(newGraph.has("a", "b"), false);
+    assert.strictEqual(newGraph.hasRelation("a", "b"), false);
   });
   test("2/2", () => {
     const graph = new Graph();
     graph.add("a", "b");
     const newGraph = graph.to("b");
-    assert.strictEqual(newGraph.has("a", "b"), true);
+    assert.strictEqual(newGraph.hasRelation("a", "b"), true);
   });
   test("?/2", () => {
     const graph = new Graph();
     graph.add("a", "b");
     const newGraph = graph.to("c");
-    assert.strictEqual(newGraph.has("a", "b"), false);
+    assert.strictEqual(newGraph.hasRelation("a", "b"), false);
   });
   test("2/3", () => {
     const graph = new Graph();
     graph.add("a", "b");
     graph.add("b", "c");
     const newGraph = graph.to("b");
-    assert.strictEqual(newGraph.has("a", "b"), true);
-    assert.strictEqual(newGraph.has("b", "c"), false);
+    assert.strictEqual(newGraph.hasRelation("a", "b"), true);
+    assert.strictEqual(newGraph.hasRelation("b", "c"), false);
   });
   test("3/3", () => {
     const graph = new Graph();
     graph.add("a", "b");
     graph.add("b", "c");
     const newGraph = graph.to("c");
-    assert.strictEqual(newGraph.has("b", "c"), true);
-    assert.strictEqual(newGraph.has("a", "b"), true);
+    assert.strictEqual(newGraph.hasRelation("b", "c"), true);
+    assert.strictEqual(newGraph.hasRelation("a", "b"), true);
   });
   test("multi inputs", () => {
     const graph = new Graph();
     graph.add("a", "c");
     graph.add("b", "c");
     const newGraph = graph.to("c");
-    assert.strictEqual(newGraph.has("a", "c"), true);
-    assert.strictEqual(newGraph.has("b", "c"), true);
+    assert.strictEqual(newGraph.hasRelation("a", "c"), true);
+    assert.strictEqual(newGraph.hasRelation("b", "c"), true);
   });
   test("multi outputs", () => {
     const graph = new Graph();
     graph.add("a", "b");
     graph.add("a", "c");
     const newGraph = graph.to("b");
-    assert.strictEqual(newGraph.has("a", "b"), true);
-    assert.strictEqual(newGraph.has("a", "c"), false);
+    assert.strictEqual(newGraph.hasRelation("a", "b"), true);
+    assert.strictEqual(newGraph.hasRelation("a", "c"), false);
   });
   test("multi outputs, to both", () => {
     const graph = new Graph();
     graph.add("a", "b");
     graph.add("a", "c");
     const newGraph = graph.to("b", "c");
-    assert.strictEqual(newGraph.has("a", "b"), true);
-    assert.strictEqual(newGraph.has("a", "c"), true);
+    assert.strictEqual(newGraph.hasRelation("a", "b"), true);
+    assert.strictEqual(newGraph.hasRelation("a", "c"), true);
   });
 });
 
