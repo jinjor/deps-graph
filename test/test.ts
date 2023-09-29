@@ -1,3 +1,4 @@
+process.env.MODE = "test";
 import assert from "node:assert";
 import { describe, test } from "node:test";
 import { Graph } from "../dist";
@@ -339,6 +340,28 @@ describe("getLines", () => {
     }
     console.log();
     for (const line of graph.to("d", "h").getLines()) {
+      console.log(line);
+    }
+    console.log();
+  });
+  test("complex 2 (preview)", () => {
+    const graph = new Graph();
+    graph.add("a", "b");
+    graph.add("a", "e");
+    graph.add("b", "c");
+    graph.add("c", "d");
+    graph.add("c", "i");
+    graph.add("d", "g");
+    graph.add("e", "f");
+    graph.add("e", "l");
+    graph.add("f", "d");
+    graph.add("g", "h");
+    graph.add("g", "k");
+    graph.add("i", "j");
+    graph.add("j", "k");
+    graph.add("l", "m");
+    graph.add("m", "j");
+    for (const line of graph.getLines()) {
       console.log(line);
     }
     console.log();

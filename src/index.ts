@@ -189,6 +189,9 @@ export class Graph {
           hit = true;
         } else {
           if (cols[i].includes(row)) {
+            if (process.env.MODE === "test" && rowContext[i].size > 0) {
+              throw new Error("Unexpected pattern");
+            }
             line += "◊";
             hit = false;
             for (const toBeFound of this.map.get(row) ?? []) {
