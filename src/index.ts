@@ -1,3 +1,6 @@
+import { firstKey, nextKey } from "./key";
+import { Cons, List, toArray } from "./list";
+
 type DepsMap = Map<string, string[]>;
 const appendToMap = (map: DepsMap, key: string, value: string) => {
   const values = map.get(key);
@@ -13,6 +16,11 @@ const cloneMap = (map: DepsMap): DepsMap => {
     newMap.set(key, [...value]);
   }
   return newMap;
+};
+type SortingItem = {
+  values: string[];
+  key: string;
+  waiting: Set<string>;
 };
 
 export class Graph {
@@ -125,53 +133,87 @@ export class Graph {
     }
     return rows;
   }
-  getCols(): string[][] {
-    const cols: string[][] = [];
-    const { map } = this;
-    const inverseMap = cloneMap(this.inverseMap);
-    const visited = new Set<string>();
-
-    const collect = (node: string, index = 0, prev?: string) => {
-      if (visited.has(node)) {
-        return;
+  getCols(rows: string[]): string[][] {
+    const waiters = new Map<string, Cons<SortingItem>[]>();
+    let items: List<SortingItem> = null;
+    const add = (node: string) => {
+      if (items == null) {
+        items = {
+          value: {
+            values: [],
+            key: firstKey,
+            waiting: new Set<string>(),
+          },
+          next: null,
+        };
       }
-      const existing = cols[index];
-      if (existing) {
-        if (
-          prev &&
-          (existing.some((item) => this.hasRelation(item, prev)) ||
-            existing.some((item) => this.isReachable(item, prev)))
-        ) {
-          cols.splice(index, 0, [node]);
-        } else {
-          existing.push(node);
-        }
+      let lastWaiter: Cons<SortingItem> | undefined;
+      for (const waiter of waiters.get(node) ?? []) {
+        waiter.value.waiting.delete(node);
+        lastWaiter = waiter;
+      }
+      waiters.delete(node);
+
+      let target: Cons<SortingItem>;
+      if (lastWaiter == null) {
+        items = {
+          value: {
+            values: [],
+            key: nextKey(null, items.value.key),
+            waiting: new Set<string>(),
+          },
+          next: items,
+        };
+        target = items;
       } else {
-        cols.push([node]);
+        if (lastWaiter.next == null) {
+          lastWaiter.next = {
+            value: {
+              values: [],
+              key: nextKey(lastWaiter.value.key, null),
+              waiting: new Set<string>(),
+            },
+            next: null,
+          };
+        }
+        if (lastWaiter.next.value.waiting.size > 0) {
+          lastWaiter.next = {
+            value: {
+              values: [],
+              key: nextKey(lastWaiter.value.key, lastWaiter.next.value.key),
+              waiting: new Set<string>(),
+            },
+            next: lastWaiter.next,
+          };
+        }
+        target = lastWaiter.next;
       }
-      visited.add(node);
-
-      const nextNodes = inverseMap.get(node);
-      if (!nextNodes) {
-        return;
-      }
-      nextNodes.reverse();
+      target.value.values.push(node);
+      const nextNodes = this.map.get(node) ?? [];
       for (const nextNode of nextNodes) {
-        collect(nextNode, index + 1, node);
+        if (!waiters.has(nextNode)) {
+          waiters.set(nextNode, []);
+        }
+        const nextWaiters = waiters.get(nextNode)!;
+        const currentLastWaiter = nextWaiters.at(-1);
+        const shouldPushToLast =
+          currentLastWaiter && currentLastWaiter.value.key < target.value.key;
+        if (shouldPushToLast) {
+          nextWaiters.push(target);
+        } else {
+          nextWaiters.unshift(target);
+        }
+        target.value.waiting.add(nextNode);
       }
     };
-
-    const firstNodes = [...inverseMap.keys()].filter((key) => !map.has(key));
-    firstNodes.reverse();
-    for (const node of firstNodes) {
-      collect(node);
+    for (const row of rows) {
+      add(row);
     }
-    cols.reverse();
-    return cols;
+    return toArray<SortingItem>(items).map((item) => item.values);
   }
   *getLines(): Generator<string> {
     const rows = this.getRows();
-    const cols = this.getCols();
+    const cols = this.getCols(rows);
     const rowContext = Array.from({ length: cols.length }).map(
       () => new Set<string>()
     );
@@ -189,6 +231,9 @@ export class Graph {
           hit = true;
         } else {
           if (cols[i].includes(row)) {
+            if (process.env.MODE === "test" && rowContext[i].size > 0) {
+              throw new Error("Unexpected pattern");
+            }
             line += "◊";
             hit = false;
             for (const toBeFound of this.map.get(row) ?? []) {
