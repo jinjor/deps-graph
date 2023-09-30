@@ -1,4 +1,5 @@
 import { firstKey, nextKey } from "./key";
+import { Cons, toArray } from "./list";
 
 type DepsMap = Map<string, string[]>;
 const appendToMap = (map: DepsMap, key: string, value: string) => {
@@ -16,24 +17,10 @@ const cloneMap = (map: DepsMap): DepsMap => {
   }
   return newMap;
 };
-
-type List<T> = Cons<T> | null;
-type Cons<T> = {
-  value: T;
-  next: List<T>;
-};
 type SortingItem = {
   values: string[];
   key: string;
   waiting: Set<string>;
-};
-const toArray = <T>(list: List<T>): T[] => {
-  const result: T[] = [];
-  while (list) {
-    result.push(list.value);
-    list = list.next;
-  }
-  return result;
 };
 
 export class Graph {
