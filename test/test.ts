@@ -2,34 +2,34 @@ process.env.MODE = "test";
 import assert from "node:assert";
 import { describe, test } from "node:test";
 import { Graph } from "../dist";
-import { first, next } from "../src/key";
+import { firstKey, nextKey } from "../src/key";
 
 describe("Key", () => {
   test("next", () => {
-    assert.strictEqual(next("1", null), "11");
-    assert.strictEqual(next("11", null), "111");
-    assert.strictEqual(next(null, "1"), "01");
-    assert.strictEqual(next(null, "01"), "001");
-    assert.strictEqual(next("01", "1"), "011");
-    assert.strictEqual(next("1", "11"), "101");
-    assert.strictEqual(next("1", "101"), "1001");
-    assert.strictEqual(next("1", "1001"), "10001");
-    assert.strictEqual(next("01", "011"), "0101");
-    assert.strictEqual(next("01", "0101"), "01001");
-    assert.strictEqual(next("001", "01"), "0011");
-    assert.strictEqual(next("011", "1"), "0111");
-    assert.strictEqual(next("001", "0011"), "00101");
+    assert.strictEqual(nextKey("1", null), "11");
+    assert.strictEqual(nextKey("11", null), "111");
+    assert.strictEqual(nextKey(null, "1"), "01");
+    assert.strictEqual(nextKey(null, "01"), "001");
+    assert.strictEqual(nextKey("01", "1"), "011");
+    assert.strictEqual(nextKey("1", "11"), "101");
+    assert.strictEqual(nextKey("1", "101"), "1001");
+    assert.strictEqual(nextKey("1", "1001"), "10001");
+    assert.strictEqual(nextKey("01", "011"), "0101");
+    assert.strictEqual(nextKey("01", "0101"), "01001");
+    assert.strictEqual(nextKey("001", "01"), "0011");
+    assert.strictEqual(nextKey("011", "1"), "0111");
+    assert.strictEqual(nextKey("001", "0011"), "00101");
   });
   test("next (auto)", () => {
-    const list = [first];
+    const list = [firstKey];
     for (let n = 0; n < 10; n++) {
       for (let i = list.length - 1; i >= -1; i--) {
         const left = i < 0 ? null : list[i];
         const right = list[i + 1];
-        const nextKey = next(left, right);
-        left && assert(nextKey > left);
-        right && assert(nextKey < right);
-        list.splice(i + 1, 0, nextKey);
+        const next = nextKey(left, right);
+        left && assert(next > left);
+        right && assert(next < right);
+        list.splice(i + 1, 0, next);
       }
       if (n < 5) console.log(list);
     }

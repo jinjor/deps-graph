@@ -1,5 +1,5 @@
-export const first = "1";
-export const next = (
+export const firstKey = "1";
+export const nextKey = (
   left: string | null | undefined,
   right: string | null | undefined
 ) => {

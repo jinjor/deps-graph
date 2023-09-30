@@ -1,3 +1,5 @@
+import { firstKey, nextKey } from "./key";
+
 type DepsMap = Map<string, string[]>;
 const appendToMap = (map: DepsMap, key: string, value: string) => {
   const values = map.get(key);
@@ -13,6 +15,25 @@ const cloneMap = (map: DepsMap): DepsMap => {
     newMap.set(key, [...value]);
   }
   return newMap;
+};
+
+type List<T> = Cons<T> | null;
+type Cons<T> = {
+  value: T;
+  next: List<T>;
+};
+type SortingItem = {
+  values: string[];
+  key: string;
+  waiting: Set<string>;
+};
+const toArray = <T>(list: List<T>): T[] => {
+  const result: T[] = [];
+  while (list) {
+    result.push(list.value);
+    list = list.next;
+  }
+  return result;
 };
 
 export class Graph {
@@ -169,9 +190,79 @@ export class Graph {
     cols.reverse();
     return cols;
   }
+  getCols2(rows: string[]): string[][] {
+    const lastWaiters = new Map<string, Cons<SortingItem>>();
+    let items: Cons<SortingItem> = {
+      value: {
+        values: [],
+        key: firstKey,
+        waiting: new Set<string>(),
+      },
+      next: null,
+    };
+    const add = (node: string) => {
+      let lastWaiter = lastWaiters.get(node);
+      lastWaiters.delete(node);
+      if (lastWaiter) {
+        lastWaiter.value.waiting.delete(node);
+      }
+
+      let target: Cons<SortingItem>;
+      if (lastWaiter == null) {
+        items = {
+          value: {
+            values: [],
+            key: nextKey(null, items.value.key),
+            waiting: new Set<string>(),
+          },
+          next: items,
+        };
+        target = items;
+      } else {
+        if (lastWaiter.next == null) {
+          lastWaiter.next = {
+            value: {
+              values: [],
+              key: nextKey(lastWaiter.value.key, null),
+              waiting: new Set<string>(),
+            },
+            next: null,
+          };
+        }
+        if (lastWaiter.next.value.waiting.size > 0) {
+          lastWaiter.next = {
+            value: {
+              values: [],
+              key: nextKey(lastWaiter.value.key, lastWaiter.next.value.key),
+              waiting: new Set<string>(),
+            },
+            next: lastWaiter.next,
+          };
+        }
+        target = lastWaiter.next;
+      }
+      target.value.values.push(node);
+      const nextNodes = this.map.get(node) ?? [];
+      for (const nextNode of nextNodes) {
+        if (
+          !lastWaiters.has(nextNode) ||
+          lastWaiters.get(nextNode)!.value.key < target.value.key
+        ) {
+          target.value.waiting.add(nextNode);
+          lastWaiters.set(nextNode, target);
+        }
+      }
+    };
+    for (const row of rows) {
+      add(row);
+    }
+    return toArray(items).map((item) => item.values);
+  }
+
   *getLines(): Generator<string> {
     const rows = this.getRows();
-    const cols = this.getCols();
+    // const cols = this.getCols();
+    const cols = this.getCols2(rows);
     const rowContext = Array.from({ length: cols.length }).map(
       () => new Set<string>()
     );
