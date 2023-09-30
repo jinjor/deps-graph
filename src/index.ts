@@ -1,5 +1,5 @@
 import { firstKey, nextKey } from "./key";
-import { Cons, toArray } from "./list";
+import { Cons, List, toArray } from "./list";
 
 type DepsMap = Map<string, string[]>;
 const appendToMap = (map: DepsMap, key: string, value: string) => {
@@ -133,61 +133,20 @@ export class Graph {
     }
     return rows;
   }
-  getCols(): string[][] {
-    const cols: string[][] = [];
-    const { map } = this;
-    const inverseMap = cloneMap(this.inverseMap);
-    const visited = new Set<string>();
-
-    const collect = (node: string, index = 0, prev?: string) => {
-      if (visited.has(node)) {
-        return;
-      }
-      const existing = cols[index];
-      if (existing) {
-        if (
-          prev &&
-          (existing.some((item) => this.hasRelation(item, prev)) ||
-            existing.some((item) => this.isReachable(item, prev)))
-        ) {
-          cols.splice(index, 0, [node]);
-        } else {
-          existing.push(node);
-        }
-      } else {
-        cols.push([node]);
-      }
-      visited.add(node);
-
-      const nextNodes = inverseMap.get(node);
-      if (!nextNodes) {
-        return;
-      }
-      nextNodes.reverse();
-      for (const nextNode of nextNodes) {
-        collect(nextNode, index + 1, node);
-      }
-    };
-
-    const firstNodes = [...inverseMap.keys()].filter((key) => !map.has(key));
-    firstNodes.reverse();
-    for (const node of firstNodes) {
-      collect(node);
-    }
-    cols.reverse();
-    return cols;
-  }
-  getCols2(rows: string[]): string[][] {
+  getCols(rows: string[]): string[][] {
     const lastWaiters = new Map<string, Cons<SortingItem>>();
-    let items: Cons<SortingItem> = {
-      value: {
-        values: [],
-        key: firstKey,
-        waiting: new Set<string>(),
-      },
-      next: null,
-    };
+    let items: List<SortingItem> = null;
     const add = (node: string) => {
+      if (items == null) {
+        items = {
+          value: {
+            values: [],
+            key: firstKey,
+            waiting: new Set<string>(),
+          },
+          next: null,
+        };
+      }
       let lastWaiter = lastWaiters.get(node);
       lastWaiters.delete(node);
       if (lastWaiter) {
@@ -243,13 +202,11 @@ export class Graph {
     for (const row of rows) {
       add(row);
     }
-    return toArray(items).map((item) => item.values);
+    return toArray<SortingItem>(items).map((item) => item.values);
   }
-
   *getLines(): Generator<string> {
     const rows = this.getRows();
-    // const cols = this.getCols();
-    const cols = this.getCols2(rows);
+    const cols = this.getCols(rows);
     const rowContext = Array.from({ length: cols.length }).map(
       () => new Set<string>()
     );

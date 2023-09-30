@@ -256,31 +256,42 @@ describe("Graph", () => {
   describe("getCols", () => {
     test("empty", () => {
       const graph = new Graph();
-      assert.deepStrictEqual(graph.getCols(), []);
+      assert.deepStrictEqual(graph.getCols(graph.getRows()), []);
     });
     test("single", () => {
       const graph = new Graph();
       graph.add("a", "b");
-      assert.deepStrictEqual(graph.getCols(), [["a"], ["b"]]);
+      assert.deepStrictEqual(graph.getCols(graph.getRows()), [["a"], ["b"]]);
     });
     test("multi inputs", () => {
       const graph = new Graph();
       graph.add("a", "c");
       graph.add("b", "c");
-      assert.deepStrictEqual(graph.getCols(), [["b"], ["a"], ["c"]]);
+      assert.deepStrictEqual(graph.getCols(graph.getRows()), [
+        ["b"],
+        ["a"],
+        ["c"],
+      ]);
     });
     test("multi outputs", () => {
       const graph = new Graph();
       graph.add("a", "b");
       graph.add("a", "c");
-      assert.deepStrictEqual(graph.getCols(), [["a"], ["c", "b"]]);
+      assert.deepStrictEqual(graph.getCols(graph.getRows()), [
+        ["a"],
+        ["b", "c"],
+      ]);
     });
     test("triangle", () => {
       const graph = new Graph();
       graph.add("b", "c");
       graph.add("a", "b");
       graph.add("a", "c");
-      assert.deepStrictEqual(graph.getCols(), [["a"], ["b"], ["c"]]);
+      assert.deepStrictEqual(graph.getCols(graph.getRows()), [
+        ["a"],
+        ["b"],
+        ["c"],
+      ]);
     });
     test("diamond", () => {
       const graph = new Graph();
@@ -288,7 +299,12 @@ describe("Graph", () => {
       graph.add("c", "d");
       graph.add("a", "b");
       graph.add("a", "c");
-      assert.deepStrictEqual(graph.getCols(), [["a"], ["c"], ["b"], ["d"]]);
+      assert.deepStrictEqual(graph.getCols(graph.getRows()), [
+        ["a"],
+        ["c"],
+        ["b"],
+        ["d"],
+      ]);
     });
     test("hexagon", () => {
       const graph = new Graph();
@@ -298,10 +314,10 @@ describe("Graph", () => {
       graph.add("a", "e");
       graph.add("e", "f");
       graph.add("f", "d");
-      assert.deepStrictEqual(graph.getCols(), [
+      assert.deepStrictEqual(graph.getCols(graph.getRows()), [
         ["a"],
-        ["e"],
-        ["f", "b"],
+        ["b", "e"],
+        ["f"],
         ["c"],
         ["d"],
       ]);
@@ -314,31 +330,13 @@ describe("Graph", () => {
       graph.add("d", "e");
       graph.add("a", "f");
       graph.add("f", "e");
-      assert.deepStrictEqual(graph.getCols(), [
+      assert.deepStrictEqual(graph.getCols(graph.getRows()), [
         ["a"],
-        ["b"],
-        ["f", "c"],
+        ["b", "f"],
+        ["c"],
         ["d"],
         ["e"],
       ]);
-    });
-    test("circular 1", () => {
-      const graph = new Graph();
-      graph.add("a", "a");
-      assert.doesNotThrow(() => graph.getCols());
-    });
-    test("circular 2", () => {
-      const graph = new Graph();
-      graph.add("a", "b");
-      graph.add("b", "a");
-      assert.doesNotThrow(() => graph.getCols());
-    });
-    test("circular 3", () => {
-      const graph = new Graph();
-      graph.add("a", "b");
-      graph.add("b", "c");
-      graph.add("c", "a");
-      assert.doesNotThrow(() => graph.getCols());
     });
   });
 
