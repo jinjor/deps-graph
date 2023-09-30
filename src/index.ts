@@ -134,7 +134,7 @@ export class Graph {
     return rows;
   }
   getCols(rows: string[]): string[][] {
-    const lastWaiters = new Map<string, Cons<SortingItem>>();
+    const waiters = new Map<string, Cons<SortingItem>[]>();
     let items: List<SortingItem> = null;
     const add = (node: string) => {
       if (items == null) {
@@ -147,11 +147,12 @@ export class Graph {
           next: null,
         };
       }
-      let lastWaiter = lastWaiters.get(node);
-      lastWaiters.delete(node);
-      if (lastWaiter) {
-        lastWaiter.value.waiting.delete(node);
+      let lastWaiter: Cons<SortingItem> | undefined;
+      for (const waiter of waiters.get(node) ?? []) {
+        waiter.value.waiting.delete(node);
+        lastWaiter = waiter;
       }
+      waiters.delete(node);
 
       let target: Cons<SortingItem>;
       if (lastWaiter == null) {
@@ -190,13 +191,19 @@ export class Graph {
       target.value.values.push(node);
       const nextNodes = this.map.get(node) ?? [];
       for (const nextNode of nextNodes) {
-        if (
-          !lastWaiters.has(nextNode) ||
-          lastWaiters.get(nextNode)!.value.key < target.value.key
-        ) {
-          target.value.waiting.add(nextNode);
-          lastWaiters.set(nextNode, target);
+        if (!waiters.has(nextNode)) {
+          waiters.set(nextNode, []);
         }
+        const nextWaiters = waiters.get(nextNode)!;
+        const currentLastWaiter = nextWaiters.at(-1);
+        const shouldPushToLast =
+          currentLastWaiter && currentLastWaiter.value.key < target.value.key;
+        if (shouldPushToLast) {
+          nextWaiters.push(target);
+        } else {
+          nextWaiters.unshift(target);
+        }
+        target.value.waiting.add(nextNode);
       }
     };
     for (const row of rows) {
