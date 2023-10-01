@@ -403,7 +403,7 @@ describe("Graph", () => {
     });
   });
   describe("performance", () => {
-    test("getCols() 1", () => {
+    test("getRows() / getCols() 1", () => {
       const max = 2000;
       const graph = new Graph();
       for (let i = 0; i < max; i++) {
@@ -416,9 +416,9 @@ describe("Graph", () => {
       const b = Date.now();
       graph.getCols(rows);
       const c = Date.now();
-      console.log("getCols() 1", b - a, c - b);
+      console.log("getRows() / getCols() 1", b - a, c - b);
     });
-    test("getCols() 2", () => {
+    test("getRows() / getCols() 2", () => {
       const max = 2000;
       const graph = new Graph();
       for (let i = max - 1; i >= 0; i--) {
@@ -431,9 +431,9 @@ describe("Graph", () => {
       const b = Date.now();
       graph.getCols(rows);
       const c = Date.now();
-      console.log("getCols() 2", b - a, c - b);
+      console.log("getRows() / getCols() 2", b - a, c - b);
     });
-    test("getCols() 3", () => {
+    test("getRows() / getCols() 3", () => {
       const max = 2000;
       const graph = new Graph();
       for (let i = 0; i < max; i++) {
@@ -446,9 +446,9 @@ describe("Graph", () => {
       const b = Date.now();
       graph.getCols(rows);
       const c = Date.now();
-      console.log("getCols() 3", b - a, c - b);
+      console.log("getRows() / getCols() 3", b - a, c - b);
     });
-    test("getCols() 4", () => {
+    test("getRows() / getCols() 4", () => {
       const max = 2000;
       const graph = new Graph();
       for (let i = max - 1; i >= 0; i--) {
@@ -461,7 +461,7 @@ describe("Graph", () => {
       const b = Date.now();
       graph.getCols(rows);
       const c = Date.now();
-      console.log("getCols() 4", b - a, c - b);
+      console.log("getRows() / getCols() 4", b - a, c - b);
     });
   });
 });
