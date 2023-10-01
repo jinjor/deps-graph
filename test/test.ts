@@ -21,8 +21,9 @@ describe("Key", () => {
     assert.strictEqual(nextKey("001", "0011"), "00101");
   });
   test("next (auto)", () => {
+    const start = Date.now();
     const list = [firstKey];
-    for (let n = 0; n < 10; n++) {
+    for (let n = 0; n < 15; n++) {
       for (let i = list.length - 1; i >= -1; i--) {
         const left = i < 0 ? null : list[i];
         const right = list[i + 1];
@@ -33,6 +34,8 @@ describe("Key", () => {
       }
       if (n < 5) console.log(list);
     }
+    const end = Date.now();
+    console.log("next (auto)", end - start);
   });
 });
 
@@ -397,6 +400,68 @@ describe("Graph", () => {
         console.log(line);
       }
       console.log();
+    });
+  });
+  describe("performance", () => {
+    test("getRows() / getCols() 1", () => {
+      const max = 2000;
+      const graph = new Graph();
+      for (let i = 0; i < max; i++) {
+        for (let j = i + 1; j < max; j++) {
+          graph.add(i.toString(), j.toString());
+        }
+      }
+      const a = Date.now();
+      const rows = graph.getRows();
+      const b = Date.now();
+      graph.getCols(rows);
+      const c = Date.now();
+      console.log("getRows() / getCols() 1", b - a, c - b);
+    });
+    test("getRows() / getCols() 2", () => {
+      const max = 2000;
+      const graph = new Graph();
+      for (let i = max - 1; i >= 0; i--) {
+        for (let j = i + 1; j < max; j++) {
+          graph.add(i.toString(), j.toString());
+        }
+      }
+      const a = Date.now();
+      const rows = graph.getRows();
+      const b = Date.now();
+      graph.getCols(rows);
+      const c = Date.now();
+      console.log("getRows() / getCols() 2", b - a, c - b);
+    });
+    test("getRows() / getCols() 3", () => {
+      const max = 2000;
+      const graph = new Graph();
+      for (let i = 0; i < max; i++) {
+        for (let j = max - 1; j >= i + 1; j--) {
+          graph.add(i.toString(), j.toString());
+        }
+      }
+      const a = Date.now();
+      const rows = graph.getRows();
+      const b = Date.now();
+      graph.getCols(rows);
+      const c = Date.now();
+      console.log("getRows() / getCols() 3", b - a, c - b);
+    });
+    test("getRows() / getCols() 4", () => {
+      const max = 2000;
+      const graph = new Graph();
+      for (let i = max - 1; i >= 0; i--) {
+        for (let j = max - 1; j >= i + 1; j--) {
+          graph.add(i.toString(), j.toString());
+        }
+      }
+      const a = Date.now();
+      const rows = graph.getRows();
+      const b = Date.now();
+      graph.getCols(rows);
+      const c = Date.now();
+      console.log("getRows() / getCols() 4", b - a, c - b);
     });
   });
 });

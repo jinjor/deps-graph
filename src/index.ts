@@ -10,13 +10,6 @@ const appendToMap = (map: DepsMap, key: string, value: string) => {
     map.set(key, [value]);
   }
 };
-const cloneMap = (map: DepsMap): DepsMap => {
-  const newMap = new Map<string, string[]>();
-  for (const [key, value] of map) {
-    newMap.set(key, [...value]);
-  }
-  return newMap;
-};
 type SortingItem = {
   values: string[];
   key: string;
@@ -99,11 +92,21 @@ export class Graph {
   }
   getRows(): string[] {
     const rows: string[] = [];
-    const map = cloneMap(this.map);
-    const inverseMap = cloneMap(this.inverseMap);
+    const map = new Map<string, string[]>();
+    for (const [key, value] of this.map) {
+      map.set(key, [...value]);
+    }
+    const inverseMap = new Map<string, Set<string>>();
+    for (const [key, value] of this.inverseMap) {
+      inverseMap.set(key, new Set([...value]));
+    }
 
     const findFirstNode = () => {
-      return [...map.keys()].find((key) => !inverseMap.has(key));
+      for (const key of map.keys()) {
+        if (!inverseMap.has(key)) {
+          return key;
+        }
+      }
     };
     const collect = (node: string) => {
       rows.push(node);
@@ -113,8 +116,8 @@ export class Graph {
       }
       for (const nextNode of nextNodes) {
         const inverseValues = inverseMap.get(nextNode)!;
-        inverseValues.splice(inverseValues.indexOf(node), 1);
-        if (inverseValues.length === 0) {
+        inverseValues.delete(node);
+        if (inverseValues.size === 0) {
           inverseMap.delete(nextNode);
           collect(nextNode);
         }
