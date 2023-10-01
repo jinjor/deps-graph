@@ -103,7 +103,11 @@ export class Graph {
     const inverseMap = cloneMap(this.inverseMap);
 
     const findFirstNode = () => {
-      return [...map.keys()].find((key) => !inverseMap.has(key));
+      for (const key of map.keys()) {
+        if (!inverseMap.has(key)) {
+          return key;
+        }
+      }
     };
     const collect = (node: string) => {
       rows.push(node);
